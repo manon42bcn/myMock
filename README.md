@@ -10,5 +10,5 @@ etc.
 Basic mock server to test custom response codes.
 After install requirements you can run:
 $> python MockedCodesServer.py
-And type in your browser localhost:8000/mockserver/<code>
-and you will get <code> as response code and the associated message.
+And type in your browser localhost:8000/mockserver/code
+and you will get 'code' as response code and the associated message.
