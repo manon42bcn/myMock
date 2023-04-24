@@ -55,7 +55,10 @@ class MyMockServer(http.server.SimpleHTTPRequestHandler):
         request_data = self.rfile.read(content_length)
         request_data_str = request_data.decode('utf-8')
         request_data_json = json.loads(request_data_str)
-        self.mock_code = self.get_requested_code(request_data_json, 'post')
+        # it could be found more than one requested code
+        # refactor to a response method to avoid
+        # future errors...
+        self.mock_code = self.get_requested_code(request_data_json, 'post')[0]
         self.checkMockCode()
         self.send_response(self.mock_code)
         self.send_header('Content-Type', 'text/plain')
