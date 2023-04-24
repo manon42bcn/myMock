@@ -1,0 +1,10 @@
+{
+    "host": "localhost",
+    "port": "8000",
+    "get": {
+        "request_field": ["/mockserver/"]
+    },
+    "post": {
+        "request_field": ["body", "message", "messages", "text", "body"]
+    }
+}
