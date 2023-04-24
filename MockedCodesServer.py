@@ -38,13 +38,7 @@ class MyMockServer(http.server.SimpleHTTPRequestHandler):
                 result = [x.get(field, {}) for x in result]
         return (result)
 
-    def do_GET(self):
-        if '/favicon.ico' in self.path:
-            return
-        log.info(f"GET request: '{self.path}'")
-        if '/mockserver/' not in self.path:
-            return (self.path_warning())
-        self.mock_code = self.path.split('/')[-1]
+    def checkMockCode(self):
         try:
             self.mock_code = int(self.mock_code)
             log.info(f"Requested code founded {self.mock_code}")
@@ -55,6 +49,27 @@ class MyMockServer(http.server.SimpleHTTPRequestHandler):
         except KeyError:
             log.error(f"Requested code is out of range {self.mock_code}")
             return (self.code_warning())
+
+    def do_POST(self):
+        content_length = int(self.headers.get('Content-Length', 0))
+        request_data = self.rfile.read(content_length)
+        request_data_str = request_data.decode('utf-8')
+        request_data_json = json.loads(request_data_str)
+        self.mock_code = self.get_requested_code(request_data_json, 'post')
+        self.checkMockCode()
+        self.send_response(self.mock_code)
+        self.send_header('Content-Type', 'text/plain')
+        self.end_headers()
+        self.wfile.write(bytes(responses[self.mock_code], "UTF-8"))
+
+    def do_GET(self):
+        if '/favicon.ico' in self.path:
+            return
+        log.info(f"GET request: '{self.path}'")
+        if '/mockserver/' not in self.path:
+            return (self.path_warning())
+        self.mock_code = self.path.split('/')[-1]
+        self.checkMockCode()
         self.send_response(self.mock_code)
         self.end_headers()
         self.wfile.write(bytes(self.mock_msg, "UTF-8"))
