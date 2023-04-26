@@ -3,6 +3,10 @@ import json
 import http.server
 import socketserver
 from http.client import responses
+import argparse
+import sys
+import inspect
+import myFunctions.myFunctions as mF
 
 log = logging.getLogger('http_logger')
 log.setLevel(logging.DEBUG)
@@ -15,6 +19,17 @@ class MyMockServer(http.server.SimpleHTTPRequestHandler):
 
     def __init__(self, *args, **kwargs):
         self.config = kwargs.pop('config', None)
+        # Loading personalized functions
+        imF = dir(mF)
+        try:
+            self.myFnc = {key: getattr(mF, key) \
+                            for key in imF \
+                            if inspect.isfunction(getattr(mF, key)) \
+                            and key.startswith('mock_fnc_')}
+        except:
+            error_msg('External functions could not be found. '
+                      'myFunctions/myFunctions.py should be present '
+                      'even if is empty file')
         super().__init__(*args, **kwargs)
 
     def code_warning(self):
@@ -71,6 +86,10 @@ class MyMockServer(http.server.SimpleHTTPRequestHandler):
             self.mock_code = self.mock_req
             self.sender()
 
+    def create_response(self, scenario):
+        template = self.config
+        pass
+
     def do_POST(self):
         content_length = int(self.headers.get('Content-Length', 0))
         request_data = self.rfile.read(content_length)
@@ -96,29 +115,49 @@ class MyHTTPServer(socketserver.TCPServer):
         super().__init__(self.server_address, handlerClass)
 
 
+def get_parse():
+    '''
+    Get parse options:
+        -c --config: json file containing all config. 
+        By default will loud config/config_fields.json
+    '''
+    parse = argparse.ArgumentParser(exit_on_error=False)
+    parse.add_argument('-c', '--config', dest='config', type=str, help='config field file', default='/config/config_fields.json')
+    parse.add_argument('-t', '--template', dest='template', type=str, help='template file', default='/config/template.json')
+    print(f'{parse.parse_args()}')
+    return (vars(parse.parse_args()))
+
+def error_msg(message):
+    # To log and exit at fatal error
+    log.error(message)
+    sys.exit()
+
 if __name__ == '__main__':
-    with open('config/config_fields.json') as fd:
-        config = json.load(fd)
+    opts = get_parse()
+    try:
+        with open('config/config_fields.json') as fd:
+            config = json.load(fd)
+    except:
+        log.error('')
     if 'host' in config:
         HOST = config['host']
     else:
-        log.error('Host field missing at config/config_fields.json')
-        exit(1)
+        error_msg('Host field missing at config/config_fields.json')
+
     if 'port' in config:
         try:
             PORT = int(config['port'])
         except ValueError:
-            log.error('Invalid port field at config/config_fields.json')
-            exit(1)
+            error_msg('Invalid port field at config/config_fields.json')
     else:
-        log.error('Port field missing at config/config_fields.json')
-        exit(1)
+        error_msg('Port field missing at config/config_fields.json')
+
     log.info('Config HOST and PORT successfully loaded from config/config_fields.json')
     try:
         httpd = MyHTTPServer(HOST, PORT, config)
     except:
-        log.error('Failed to start the server, check HOST and PORT configuration')
-        exit(1)
+        error_msg('Failed to start the server, check HOST and PORT configuration')
+
     log.info(f'Server running at -> {HOST}:{PORT}')
     print(f"Listening at {HOST}:{PORT}")
     try:
