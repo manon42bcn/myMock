@@ -38,11 +38,11 @@ class MyMockServer(http.server.SimpleHTTPRequestHandler):
         self.send_response(int(self.mock_code))
         if len(self.header_content):
             for key, value in self.header_content.items():
-                log.debug(f'HEADER {key}: {value}')
                 self.send_header(key, value)
         self.end_headers()
         if isinstance(self.response_content, dict):
             rsp = json.dumps(self.response_content)
+            log.warning(f'HOLA {rsp.encode()}')
             self.wfile.write(rsp.encode())
         else:
             self.wfile.write(bytes(self.response_content, "UTF-8"))
@@ -192,7 +192,6 @@ class MyHTTPServer(socketserver.TCPServer):
         self.server_address = (host, port)
         handlerClass = lambda *args, **kwargs: MyMockServer(*args, **kwargs, config=self.config)
         super().__init__(self.server_address, handlerClass)
-
 
 def get_parse():
     '''
