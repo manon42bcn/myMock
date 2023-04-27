@@ -16,10 +16,12 @@ file_handler.setFormatter(formatter)
 log.addHandler(file_handler)
 
 class MyMockServer(http.server.SimpleHTTPRequestHandler):
-
+    '''
+    at init: load personalized functions
+    and init superclass
+    '''
     def __init__(self, *args, **kwargs):
         self.config = kwargs.pop('config', None)
-        # Loading personalized functions
         imF = dir(mF)
         try:
             self.myFnc = {key: getattr(mF, key) \
@@ -31,6 +33,100 @@ class MyMockServer(http.server.SimpleHTTPRequestHandler):
                       'myFunctions/myFunctions.py should be present '
                       'even if is empty file')
         super().__init__(*args, **kwargs)
+
+    def sender(self):
+        self.send_response(self.mock_code)
+        if len(self.header_content):
+            for key, value in self.header_content.items():
+                self.send_header(key, value)    
+        self.end_headers()
+        if isinstance(self.response_content, dict):
+            rsp = json.dumps(self.response_content)
+            self.wfile.write(rsp.json.encode())
+        else:
+            self.wfile.write(bytes(self.response_content, "UTF-8"))
+
+    def do_mockurl(self):
+        '''
+        Build mock response for mockurl
+        functionality
+        '''
+        log.info('MOCK-URL request.')
+        self.template = self.config['templates']['URL']
+        self.mockMode = 'URL'
+        self.mock_req = self.path.split('/')[-1]
+        self.checkMockCode()
+        self.template_header()
+        self.template_response()
+        self.to_send()
+
+    def get_requested_code(self):
+        '''
+        Get requested code(s) using config file
+        and search it at request
+        '''
+        result = self.config['templates'][self.mockMode]['request']
+        for field in self.config[self.mockMode]['request_field']:
+            if isinstance(result, dict):
+                result = result.get(field, {})
+            elif isinstance(result, list):
+                result = [x.get(field, {}) for x in result]
+        return (result)
+
+    def do_mockserver(self):
+        '''
+        Build mock response for mockserver
+        functionality.
+        '''
+        log.info('MOCK-SERVER request.')
+        self.template = self.config['templates'][self.command]
+        self.mockMode = self.command
+        self.mock_req = self.get_requested_code()
+        self.checkMockCode()
+        self.req_header = json.dumps(dict(self.headers))
+        len = int(self.headers.get('Content-Length', 0))
+        request_data = self.rfile.read(len)
+        self.req_data = request_data.decode('utf-8')
+
+    def template_response(self):
+        '''
+        Build body response using template.
+        If a mock_fnc_ is founded will be called
+        '''
+        self.response_content = {}
+        for key, value in self.template['response']['data'].items():
+            self.response_content[key] = self.myFnc[value]() \
+                if value.startswith('mock_fnc_') \
+                else value
+
+    def template_header(self):
+        '''
+        Build header response using template.
+        If a mock_fnc_ is founded will be called
+        '''
+        self.header_content = {}
+        for key, value in self.template['response']['header'].items():
+            self.header_content[key] = self.myFnc[value]() \
+                if value.startswith('mock_fnc_') \
+                else value
+
+    def get_mock_request(self):
+        '''
+        EVALUATE REQUEST:
+        /mockurl/ if request is sended to and url
+        with /mockurl/ in path, response will be
+        getted and returned using /mockurl/<code>.
+        /mockserver in path will evaluate
+        all options...  
+        '''
+        if '/favicon.ico' in self.path:
+            return
+        if '/mockurl/' in self.path:
+            self.do_mockurl()
+        if '/mockserver' in self.path:
+            self.do_mockserver()
+            pass
+        pass
 
     def code_warning(self):
         log.error(f"Code is not present or is out of range {self.mock_code}.")
@@ -44,15 +140,6 @@ class MyMockServer(http.server.SimpleHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(b"To get mocked status codes, url shoud include '/mockserver/<code>'")
 
-    def get_requested_code(self, body, action):
-        result = body
-        for field in self.config[action]['request_field']:
-            if isinstance(result, dict):
-                result = result.get(field, {})
-            elif isinstance(result, list):
-                result = [x.get(field, {}) for x in result]
-        return (result)
-
     def checkMockCode(self):
         try:
             self.mock_code = int(self.mock_code)
@@ -65,13 +152,6 @@ class MyMockServer(http.server.SimpleHTTPRequestHandler):
         except KeyError:
             log.error(f"Requested code is out of range {self.mock_code}")
             return (self.code_warning())
-
-    def sender(self):
-        self.checkMockCode()
-        self.send_response(self.mock_code)
-        self.send_header('Content-Type', 'text/plain')
-        self.end_headers()
-        self.wfile.write(bytes(self.mock_msg, "UTF-8"))
 
     def to_send(self):
         if isinstance(self.mock_req, list):
@@ -90,22 +170,20 @@ class MyMockServer(http.server.SimpleHTTPRequestHandler):
         template = self.config
         pass
 
-    def do_POST(self):
-        content_length = int(self.headers.get('Content-Length', 0))
-        request_data = self.rfile.read(content_length)
-        request_data_str = request_data.decode('utf-8')
-        request_data_json = json.loads(request_data_str)
-        self.mock_req = self.get_requested_code(request_data_json, 'post')
-        self.to_send()
-
     def do_GET(self):
-        if '/favicon.ico' in self.path:
-            return
-        log.info(f"GET request: '{self.path}'")
-        if '/mockserver/' not in self.path:
-            return (self.path_warning())
-        self.mock_req = self.path.split('/')[-1]
-        self.to_send()
+        self.get_mock_request()
+
+    def do_POST(self):
+        self.get_mock_request()
+
+    def do_PUT(self):
+        self.get_mock_request()
+
+    def do_DELETE(self):
+        self.get_mock_request()
+
+    def do_PATCH(self):
+        self.get_mock_request()
 
 class MyHTTPServer(socketserver.TCPServer):
     def __init__(self, host, port, config):
