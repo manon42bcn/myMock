@@ -35,14 +35,15 @@ class MyMockServer(http.server.SimpleHTTPRequestHandler):
         super().__init__(*args, **kwargs)
 
     def sender(self):
-        self.send_response(self.mock_code)
+        self.send_response(int(self.mock_code))
         if len(self.header_content):
             for key, value in self.header_content.items():
-                self.send_header(key, value)    
+                log.debug(f'HEADER {key}: {value}')
+                self.send_header(key, value)
         self.end_headers()
         if isinstance(self.response_content, dict):
             rsp = json.dumps(self.response_content)
-            self.wfile.write(rsp.json.encode())
+            self.wfile.write(rsp.encode())
         else:
             self.wfile.write(bytes(self.response_content, "UTF-8"))
 
@@ -56,8 +57,8 @@ class MyMockServer(http.server.SimpleHTTPRequestHandler):
         self.mockMode = 'URL'
         self.mock_req = self.path.split('/')[-1]
         self.checkMockCode()
-        self.template_header()
         self.template_response()
+        self.template_header()
         self.to_send()
 
     def get_requested_code(self):
@@ -78,7 +79,7 @@ class MyMockServer(http.server.SimpleHTTPRequestHandler):
         Build mock response for mockserver
         functionality.
         '''
-        log.info('MOCK-SERVER request.')
+        log.info('MOCK-SERVER request mode')
         self.template = self.config['templates'][self.command]
         self.mockMode = self.command
         self.mock_req = self.get_requested_code()
@@ -95,7 +96,7 @@ class MyMockServer(http.server.SimpleHTTPRequestHandler):
         '''
         self.response_content = {}
         for key, value in self.template['response']['data'].items():
-            self.response_content[key] = self.myFnc[value]() \
+            self.response_content[key] = self.myFnc[value](self) \
                 if value.startswith('mock_fnc_') \
                 else value
 
@@ -106,7 +107,7 @@ class MyMockServer(http.server.SimpleHTTPRequestHandler):
         '''
         self.header_content = {}
         for key, value in self.template['response']['header'].items():
-            self.header_content[key] = self.myFnc[value]() \
+            self.header_content[key] = self.myFnc[value](self) \
                 if value.startswith('mock_fnc_') \
                 else value
 
@@ -142,7 +143,7 @@ class MyMockServer(http.server.SimpleHTTPRequestHandler):
 
     def checkMockCode(self):
         try:
-            self.mock_code = int(self.mock_code)
+            self.mock_code = int(self.mock_req)
             log.info(f"Requested code found {self.mock_code}")
         except:
             return (self.code_warning())
