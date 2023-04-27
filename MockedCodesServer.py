@@ -46,6 +46,8 @@ class MyMockServer(http.server.SimpleHTTPRequestHandler):
             self.wfile.write(rsp.encode())
         else:
             self.wfile.write(bytes(self.response_content, "UTF-8"))
+        log.debug(f'len {len(self.response_content)} bytes')
+        log.debug(f'len otro {self.myFnc["mock_fnc_content_len_json"](self)}')
 
     def do_mockurl(self):
         '''
