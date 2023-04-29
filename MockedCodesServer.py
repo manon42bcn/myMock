@@ -32,11 +32,13 @@ class MyMockServer(http.server.SimpleHTTPRequestHandler):
         '''
         if '/favicon.ico' in self.path:
             return
-        if '/mockurl/' in self.path:
+        elif '/mockurl/' in self.path:
             self.do_mockurl()
-        if '/mockserver' in self.path:
+        elif '/mockserver' in self.path:
             self.do_mockserver()
-
+        else:
+            self.do_index()
+            
     def do_mockurl(self):
         '''
         Build mock response for mockurl
@@ -64,7 +66,15 @@ class MyMockServer(http.server.SimpleHTTPRequestHandler):
         self.req_data = json.loads(request_data.decode('utf-8'))
         self.mock_req = self.get_requested_code()
         self.to_send()
-
+    
+    def do_index(self):
+        with open('index.html', 'r') as fd:
+            self.response_content = fd.read()
+        self.send_response(200, 'OK')
+        self.send_header('Content-type', 'text/html')
+        self.end_headers()
+        self.wfile.write(self.response_content.encode("utf-8"))
+    
     def get_requested_code(self):
         '''
         Get requested code(s) using config file
