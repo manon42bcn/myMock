@@ -1,0 +1,19 @@
+{
+    "header": {
+        "User-Agent": "MOCK/2.25.1",
+        "Content-Type": "application/json",
+        "Content-Length": ""
+    },
+    "content": {
+        "message":{
+            "messages":[
+                {
+                    "text":{
+                        "body":"305"
+                    },
+                    "type":"text"
+                }
+            ]
+        }
+    }
+}
