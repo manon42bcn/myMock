@@ -1,4 +1,4 @@
 myMock/
 __pycache__/
 *.log
-config/*
+config/telefonica.json

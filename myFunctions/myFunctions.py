@@ -30,7 +30,7 @@ def mock_fnc_time(obj):
     return (time.strftime('%a, %d %b %Y %H:%M:%S GMT', time.gmtime()))
 
 def mock_fnc_content_len(obj):
-    return (len(obj.response_content))
+    return (str(len(obj.response_content)))
 
 def mock_fnc_default_response(obj):
     return (obj.mock_msg)

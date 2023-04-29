@@ -1,0 +1,91 @@
+<!DOCTYPE html> 
+<html>
+    <head>
+        <title>myMock Server</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+        <body>
+            <h1>myMock Server</h1>
+            <h2>Manuel Porras Ojeda - <a href="https://github.com/manon42bcn/myMock">github</a> - <a href="https://www.linkedin.com/in/manuelporrasojeda/">linkedin</a> - <a href="mailto:manuelporrasojeda@gmail.com">email</a></h2>
+            <h3>Mock server is a simple Python-based mock server to simulate REST API endpoints, providing mocked responses or URL and REQUESTS.</h3>
+            <p><b>Disclaimer!</b> This is an ongoing project! I started it as a way to understand how mock tests should be, how servers-endpoints-api works and to improve my python skills. If is useful to you, go to linkedin and comment... or just say hello by email! Please, don't cheat yourself, if you will use this project put my name somewhere ;-D</p>
+            <span>Prerequisites</span>
+            <ul>
+                <li>Python 3.6+</li>
+                <li>jsonschema 3.2.0</li>
+                <li>http.server</li>
+                <li>socketserver</li>
+                <li>argparse</li>
+            </ul>
+            <h3>Getting started</h3>
+            <p>To get started with the mock server, you can follow these steps:</p>
+            <ul>
+                <li>Clone the repository: $> git clone git@github.com:manon42bcn/myMock.git</li>
+                <li>Install the required packages by running pip install -r requirements.txt</li>
+                <li>Define your configuration file in JSON format, following the schema of the schema_config.json file (Check Config section for details)</li>
+                <li>Start the server by running python myMockServer.py
+                    <ul><span>Options:</span>
+                        <li>-d --debug: To activate all logs.</li>
+                        <li>-c --config path/to/file.json: To load your configuration</li>
+                    </ul>
+                </li>
+                <li>The server will now be running and listening for requests.</li>
+            </ul>
+            <h3>How it works?</h3>
+            <p>The mock server provides two modes: MOCKURL and MOCKSERVER. To get a mocked code, you only have to make a request to the host and port where myMock is running.</p>
+            <h3>Mockurl mode.</h3>
+            <p>MOCKURL mode simulates a URL endpoint. You have set your endpoint as <b>http:yourhost:port/mockurl/[code]</b> and you will get <b>[code]</b> as HTTP status code.</p>
+            <h3>Mockserver mode.</h3>
+            <p>MOCKURL mode simulates a URL endpoint. and the SERVER mode simulates a full server.</p>
+            <h3>Get a response, not just the HTTP status code.</h3>
+            <p>You can define what you want to recieve as a response, not only the status code. At config/config_file.json you will find a default model of a config file (make a copy to use it like a model, config_file.json it will be used as a default configuration)</p>
+            <p>The structure of the config file is:</p>
+            <ul>
+                <li>host(str):Name of the host where myMock will be running</li>
+                <li>port(int):Port number where myMock will be listen</li>
+                <li>multiple_messages(bool): myMock server will respose multiple code petitions at one request</li>
+                <li>error_code(int): Code sended where an error on request will be founded</li>
+                <li>error_range(array->int): Min and Max codes that will be considered as error codes.</li>
+                <li>error_list(bool): A detailed list of codes that will be considered as error codes.</li>
+                <li>NOTE: Error list and error range will be use to implement new features in the future</li>
+                <li>GET, POST, PUT, DELETE, PATCH(json): container request_field(array->str).<b>request_field</b> should be de path to the field that include the desired code to response.
+                    <p>e.g. Your request look like this:</p>
+                    <span>[ "messages": [</span><br />
+                    <span style="margin-left: 3em;">"message": [</span><br />
+                    <span style="margin-left: 6em;">"question": [</span><br />
+                    <span style="margin-left: 9em;">"phrase": [</span><br />
+                    <span style="margin-left: 9em;">"305"</span><br />
+                    <span style="margin-left: 9em;">]</span><br />
+                    <span style="margin-left: 6em;">]</span><br />
+                    <span style="margin-left: 3em;">]</span><br />
+                    <span>]</span></p>
+                    <p>Your request_field should be: ['messages', 'message', 'question', 'phrase']</p>
+                    <p>That way, when you make a request with that body, myMock will detect 305 as a desired HTTP response code.</p>
+                </li>
+                <li>templates(json):that should include a template for each behaviour (GET, POST, PUT, DELETE, PATCH) that sould include (Go to /config/config_fiels.json to used as reference):
+                    <ul>
+                        <li>Name of behaviour(json):
+                            <ul>
+                                <li>case(request, response, error)
+                                    <ul>
+                                        <li>header(json): key -> value that shoul be recieved or include at headers responses</li>
+                                        <li>data(json): key -> value that shoul be recieved or include at body responses</li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <p><b>Important:</b> you can use literal strings as value to each field at header or data, but you can also go to myFunctions.py and code a function using attibutes of MyMockServer class. To use personalized functions your should call it <b>mock_fnc_[name]</b> and include that name as string at value.</p>
+                    <p>e.g: At POST->response->header->Random-Number-Field you need a field that include a random number. After include a function named "mock_fnc_random", you include POST->response->header->Random-Number-Field: "mock_fnc_random" and myMock will get the return of the function as its value.</p>
+                </li>
+            </ul>
+            <h3>Comming soon:</h3>
+            <p>Right now i'm working on:</p>
+            <ul>
+                <li>clean code</li>
+                <li>docker version</li>
+                <li>include some tests</li>
+            </ul>
+        </body>
+</html>
