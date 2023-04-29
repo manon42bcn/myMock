@@ -64,13 +64,13 @@ The structure of the config file is:
     e.g. Your request look like this:
     
     \[ "messages": \[  
-    "message": \[  
-    "question": \[  
-    "phrase": \[  
-    "305"  
-    \]  
-    \]  
-    \]  
+        "message": \[  
+            "question": \[  
+                "phrase": \[  
+                    "305"  
+                \]  
+            \]  
+        \]  
     \]
     
     Your request\_field should be: \['messages', 'message', 'question', 'phrase'\]
