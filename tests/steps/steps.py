@@ -12,7 +12,7 @@ def set_server_mode(context, mode):
     if mode == 'mockurl':
         context.endpoint = context.endpoint + '/mockurl'
 
-@step('Using {method} method to Ask {code} as mocked code')
+@step('Using {method} method to ask {code} as mocked code')
 @step('Using {method} method')
 def set_request(context, method, code=None):
     context.req_method = method
