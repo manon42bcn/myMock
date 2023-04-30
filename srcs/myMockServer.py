@@ -1,6 +1,7 @@
 import jsonschema
 from myMock.MockedCodesServer import *
 from myMock.ConfigCheck import schema_template, schema_config
+import os
 
 def check_config_file(config_file, log):
     '''
@@ -31,7 +32,9 @@ if __name__ == '__main__':
     config structure
     '''
     try:
-        with open(opts['config']) as fd:
+        base_path = os.path.dirname(__file__)
+        print(f'BASE {base_path}')
+        with open(f'{base_path}/{opts["config"]}') as fd:
             config = json.load(fd)
     except Exception as e:
         log.error(f'Error loading config file. Detailed exception {e}')

@@ -88,14 +88,15 @@ The structure of the config file is:
     
     e.g: At POST->response->header->Random-Number-Field you need a field that include a random number. After include a function named "mock\_fnc\_random", you include POST->response->header->Random-Number-Field: "mock\_fnc\_random" and myMock will get the return of the function as its value.
     
+### Behave test.
 
+Some test to check myMock are included at test/ dir.
 ### Comming soon:
 
 Right now i'm working on:
 
 *   clean code
-*   docker version
-*   include some tests
+*   fix template checking
 
 ### DISCLAIMER: 
 The materials and information provided in this repository are offered "as is" and without warranties of any kind, either express or implied. The user assumes all responsibility and risk for the use of this repository and any files contained herein. This repository may contain inaccuracies or errors and we do not warrant the accuracy or completeness of the materials or information provided. In no event shall the authors or contributors of this repository be liable for any damages or losses arising out of or in connection with the use or inability to use this repository or any of its contents. By using this repository, you agree to these terms and conditions.

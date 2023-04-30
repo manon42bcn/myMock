@@ -4,7 +4,7 @@ services:
   web:
     build: .
     ports:
-      - "8080:80"
+      - "8080:8080"
     volumes:
-      - ${PWD}:/app
-    command: python MockedCodesServer.py -d
+      - ${PWD}/srcs:/app
+    command: python myMockServer.py -d

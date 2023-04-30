@@ -1,0 +1,123 @@
+{
+    "host": "0.0.0.0",
+    "port": 8080,
+    "multiple_messages": true,
+    "error_code": 500,
+    "error_range": [400, 599],
+    "error_list": false,
+    "GET": {
+        "request_field": ["message", "messages", "text", "body"]
+    },
+    "POST": {
+        "request_field": ["message", "messages", "text", "body"]
+    },
+    "PUT": {
+        "request_field": ["message", "messages", "text", "body"]
+    },
+    "DELETE": {
+        "request_field": ["message", "messages", "text", "body"]
+    },
+    "PATCH": {
+        "request_field": ["message", "messages", "text", "body"]
+    },
+    "templates": {
+        "URL": {
+            "request": {
+                "header": {
+                    "Content-Type": "application/json; charset=utf-8",
+                    "Content-Length": ""
+                },
+                "data": {
+                    "content": ""
+                }
+            },
+            "response": {
+                "header": {
+                    "Server": "mock_fnc_server",
+                    "Date": "mock_fnc_time",
+                    "Content-Type": "application/json; charset=utf-8",
+                    "Content-Length": "mock_fnc_content_len_json"
+                },
+                "data": {
+                    "content": "mock_fnc_default_response"
+                }
+            },
+            "error": 
+            {
+                "header": {
+                    "Server": "mock_fnc_server",
+                    "Date": "mock_fnc_time",
+                    "Content-Type": "application/json; charset=utf-8",
+                    "Content-Length": "mock_fnc_content_len_json"
+                },
+                "data": {
+                    "content": "mock_fnc_default_response"
+                }
+            }
+        },
+        "POST": {
+            "request": {
+                "header": {
+                    "Content-Type": "application/json; charset=utf-8",
+                    "Content-Length": ""
+                },
+                "data": {
+                    "content": ""
+                }
+            },
+            "response": {
+                "header": {
+                    "Content-Length": "mock_fnc_content_len_json",
+                    "Content-Type": "application/json; charset=utf-8",
+                    "Date": "mock_fnc_time"
+                },
+                "data": {
+                    "content": "mock_fnc_default_response"
+                }
+            },
+            "error": 
+            {
+                "header": {
+                    "Content-Length": "mock_fnc_content_len_json",
+                    "Content-Type": "application/json; charset=utf-8",
+                    "Date": "mock_fnc_time"
+                },
+                "data": {
+                    "content": "mock_fnc_default_response"
+                }
+            }
+        },
+        "GET": {
+            "request": {
+                "header": {
+                    "Content-Type": "application/json; charset=utf-8",
+                    "Content-Length": ""
+                },
+                "data": {
+                    "content": ""
+                }
+            },
+            "response": {
+                "header": {
+                    "Content-Length": "mock_fnc_content_len_json",
+                    "Content-Type": "application/json; charset=utf-8",
+                    "Date": "mock_fnc_time"
+                },
+                "data": {
+                    "content": "mock_fnc_default_response"
+                }
+            },
+            "error": 
+            {
+                "header": {
+                    "Content-Length": "mock_fnc_content_len_json",
+                    "Content-Type": "application/json; charset=utf-8",
+                    "Date": "mock_fnc_time"
+                },
+                "data": {
+                    "content": "mock_fnc_default_response"
+                }
+            }
+        }
+    }
+}

@@ -1,6 +1,6 @@
 {
-    "host": "0.0.0.0",
-    "port": 80,
+    "host": "localhost",
+    "port": 8000,
     "multiple_messages": true,
     "error_code": 500,
     "error_range": [400, 599],

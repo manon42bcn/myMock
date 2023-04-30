@@ -187,6 +187,7 @@ class MyMockServer(http.server.SimpleHTTPRequestHandler):
             log.debug(f"Default message found {self.mock_msg}")
         except KeyError:
             log.error(f"Requested code is out of range {self.mock_code}")
+            self.mock_msg = 'Out of range'
             return (self.code_warning())
 
 
@@ -245,7 +246,7 @@ def set_logger(opts):
         log.setLevel(logging.DEBUG)
     else:
         log.setLevel(logging.WARNING)
-    file_handler = logging.FileHandler(f"HTTPmockStatus.log")
+    file_handler = logging.FileHandler(f"MockServerLog.log")
     formatter = logging.Formatter('[%(asctime)s][%(levelname)s] %(message)s')
     file_handler.setFormatter(formatter)
     log.addHandler(file_handler)
