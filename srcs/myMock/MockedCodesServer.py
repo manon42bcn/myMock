@@ -1,3 +1,16 @@
+'''
+   __  __         
+  / /_/ /___      
+ / __/ / __ \     
+/ /_/ / /_/ / _ _ 
+\__/_/ .___(_|_|_)
+    /_/ 
+tree little pawns
+Manuel Porras Ojeda
+manuelporrasojeda@gmail.com
+https://www.linkedin.com/in/manuelporrasojeda/
+https://github.com/manon42bcn
+'''
 import json
 import logging
 import http.server
